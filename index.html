@@ -30,7 +30,7 @@
             font-size: 1.2em;
             cursor: pointer;
         }
-        .quiz-area { display: none; }
+        .quiz-area, .results-area { display: none; }
         .question { font-size: 2em; margin-bottom: 20px; }
         .choices button {
             background-color: #28a745;
@@ -43,6 +43,11 @@
             cursor: pointer;
         }
         .choices button.incorrect { background-color: #dc3545; }
+        #results-message {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -59,20 +64,28 @@
             <p class="question" id="question-stem"></p>
             <div class="choices" id="choices-area"></div>
         </div>
+
+        <div id="results-screen" class="results-area">
+            <h2 id="results-message"></h2>
+            <button id="play-again-btn" class="section-buttons" onclick="initialize()">Speel Opnieuw</button>
+        </div>
     </div>
 
     <script src="quiz.js"></script>
     <script>
         let currentSectionIndex;
         let currentQuestionIndex;
+        let score = 0;
 
         const startScreen = document.getElementById('start-screen');
         const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
         const sectionButtonsContainer = document.querySelector('.section-buttons');
 
         function initialize() {
             startScreen.style.display = 'block';
             quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'none';
             sectionButtonsContainer.innerHTML = '';
             sections.forEach((section, index) => {
                 const button = document.createElement('button');
@@ -85,64 +98,78 @@
         function startQuiz(sectionIndex) {
             currentSectionIndex = sectionIndex;
             currentQuestionIndex = 0;
+            score = 0;
             startScreen.style.display = 'none';
+            resultsScreen.style.display = 'none';
             quizScreen.style.display = 'block';
             loadQuestion();
         }
 
- function loadQuestion() {
-    const currentSection = sections[currentSectionIndex];
-    const currentQuestion = currentSection.questions[currentQuestionIndex];
-    
-    document.getElementById('progress').textContent = `Vraag ${currentQuestionIndex + 1} van ${currentSection.questions.length}`;
-    document.getElementById('question-stem').textContent = currentQuestion.stem + '...';
-    
-    const choicesArea = document.getElementById('choices-area');
-    choicesArea.innerHTML = '';
+        function shuffle(array) {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        }
 
-    // Shuffle the choices before creating buttons
-    const shuffledChoices = shuffle([...currentQuestion.choices]);
+        function loadQuestion() {
+            const currentSection = sections[currentSectionIndex];
+            const currentQuestion = currentSection.questions[currentQuestionIndex];
+            document.getElementById('progress').textContent = `Vraag ${currentQuestionIndex + 1} van ${currentSection.questions.length}`;
+            document.getElementById('question-stem').textContent = `Wat rijmt op... ${currentQuestion.stem}?`;
+            
+            const choicesArea = document.getElementById('choices-area');
+            choicesArea.innerHTML = '';
 
-    shuffledChoices.forEach(choice => {
-        const button = document.createElement('button');
-        button.textContent = choice;
-        button.onclick = () => checkAnswer(choice);
-        choicesArea.appendChild(button);
-    });
-}
+            const shuffledChoices = shuffle([...currentQuestion.choices]);
+
+            shuffledChoices.forEach(choice => {
+                const button = document.createElement('button');
+                button.textContent = choice;
+                button.onclick = () => checkAnswer(choice);
+                choicesArea.appendChild(button);
+            });
+        }
+
+        function endQuiz() {
+            quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            const currentSection = sections[currentSectionIndex];
+            const message = `Goed gedaan! Je hebt ${score} van de ${currentSection.questions.length} vragen goed.`;
+            document.getElementById('results-message').textContent = message;
+        }
 
         function checkAnswer(selectedChoice) {
             const currentSection = sections[currentSectionIndex];
             const currentQuestion = currentSection.questions[currentQuestionIndex];
             const buttons = document.querySelectorAll('.choices button');
-    
-        // Add visual feedback (green/red)
-        buttons.forEach(button => {
-        if (button.textContent === selectedChoice) {
+            
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === currentQuestion.correct) {
+                    button.style.backgroundColor = '#28a745';
+                }
+                if (button.textContent === selectedChoice && selectedChoice !== currentQuestion.correct) {
+                    button.style.backgroundColor = '#dc3545';
+                }
+            });
+
             if (selectedChoice === currentQuestion.correct) {
-                button.style.backgroundColor = '#28a745'; // Green for correct
-                score++; // Increment score
-            } else {
-                button.style.backgroundColor = '#dc3545'; // Red for incorrect
+                score++;
             }
-        }
-        button.disabled = true; // Disable all buttons
-    });
 
-    // Move to next question after a short delay
-    setTimeout(() => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < currentSection.questions.length) {
-            loadQuestion();
-        } else {
-            alert(`Quiz voltooid! Je hebt ${score} van de ${currentSection.questions.length} vragen goed.`);
-            score = 0; // Reset score for next time
-            initialize();
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < currentSection.questions.length) {
+                    loadQuestion();
+                } else {
+                    endQuiz();
+                }
+            }, 1500);
         }
-    }, 1500); // 1.5 second delay
-}
 
-        // Start de quiz bij het laden van de pagina
+        // Start the quiz when the page loads
         window.onload = initialize;
     </script>
 </body>

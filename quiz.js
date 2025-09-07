@@ -1,3 +1,4 @@
+let score = 0;
 const sections = [
     {
         name: "Dierenrijmen",
@@ -82,4 +83,12 @@ const sections = [
             { stem: "Mier", correct: "hier", choices: ["hier", "boom"] }
     ]
 },
+    // Add this new function to your quiz.js file
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 ];

@@ -1,3 +1,4 @@
+//New Comment New Commnet
 let score = 0;
 const sections = [
     {

@@ -73,5 +73,13 @@ const sections = [
             { stem: "Worst", correct: "dorst", choices: ["dorst", "hap"] },
             { stem: "Sap", correct: "hap", choices: ["hap", "glas"] }
         ]
-    }
+    },
+    {
+        name: "Dierenrijmen",
+        questions: [
+            // Your existing questions here...
+            { stem: "Eend", correct: "vriend", choices: ["vriend", "gras"] },
+            { stem: "Mier", correct: "hier", choices: ["hier", "boom"] }
+    ]
+},
 ];

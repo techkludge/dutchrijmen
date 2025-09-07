@@ -90,43 +90,57 @@
             loadQuestion();
         }
 
-        function loadQuestion() {
-            const currentSection = sections[currentSectionIndex];
-            const currentQuestion = currentSection.questions[currentQuestionIndex];
-            document.getElementById('progress').textContent = `Vraag ${currentQuestionIndex + 1} van ${currentSection.questions.length}`;
-            document.getElementById('question-stem').textContent = currentQuestion.stem + '...';
-            
-            const choicesArea = document.getElementById('choices-area');
-            choicesArea.innerHTML = '';
-            currentQuestion.choices.forEach(choice => {
-                const button = document.createElement('button');
-                button.textContent = choice;
-                button.onclick = () => checkAnswer(choice);
-                choicesArea.appendChild(button);
-            });
-        }
+ function loadQuestion() {
+    const currentSection = sections[currentSectionIndex];
+    const currentQuestion = currentSection.questions[currentQuestionIndex];
+    
+    document.getElementById('progress').textContent = `Vraag ${currentQuestionIndex + 1} van ${currentSection.questions.length}`;
+    document.getElementById('question-stem').textContent = currentQuestion.stem + '...';
+    
+    const choicesArea = document.getElementById('choices-area');
+    choicesArea.innerHTML = '';
+
+    // Shuffle the choices before creating buttons
+    const shuffledChoices = shuffle([...currentQuestion.choices]);
+
+    shuffledChoices.forEach(choice => {
+        const button = document.createElement('button');
+        button.textContent = choice;
+        button.onclick = () => checkAnswer(choice);
+        choicesArea.appendChild(button);
+    });
+}
 
         function checkAnswer(selectedChoice) {
             const currentSection = sections[currentSectionIndex];
             const currentQuestion = currentSection.questions[currentQuestionIndex];
-            
+            const buttons = document.querySelectorAll('.choices button');
+    
+        // Add visual feedback (green/red)
+        buttons.forEach(button => {
+        if (button.textContent === selectedChoice) {
             if (selectedChoice === currentQuestion.correct) {
-                // Correct answer logic
+                button.style.backgroundColor = '#28a745'; // Green for correct
+                score++; // Increment score
             } else {
-                // Incorrect answer logic
+                button.style.backgroundColor = '#dc3545'; // Red for incorrect
             }
-            
-            // Move to next question after a short delay
-            setTimeout(() => {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < currentSection.questions.length) {
-                    loadQuestion();
-                } else {
-                    alert('Quiz voltooid! Goed gedaan!');
-                    initialize();
-                }
-            }, 1000);
         }
+        button.disabled = true; // Disable all buttons
+    });
+
+    // Move to next question after a short delay
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < currentSection.questions.length) {
+            loadQuestion();
+        } else {
+            alert(`Quiz voltooid! Je hebt ${score} van de ${currentSection.questions.length} vragen goed.`);
+            score = 0; // Reset score for next time
+            initialize();
+        }
+    }, 1500); // 1.5 second delay
+}
 
         // Start de quiz bij het laden van de pagina
         window.onload = initialize;

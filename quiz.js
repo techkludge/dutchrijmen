@@ -1,3 +1,4 @@
+// Start of the main data array
 const sections = [
     {
         name: "Dierenrijmen",
@@ -87,6 +88,7 @@ const quizScreen = document.getElementById('quiz-screen');
 const resultsScreen = document.getElementById('results-screen');
 const sectionButtonsContainer = document.querySelector('.section-buttons');
 
+// Start of the initialize() function
 function initialize() {
     startScreen.style.display = 'block';
     quizScreen.style.display = 'none';
@@ -101,7 +103,9 @@ function initialize() {
     
     displayHighScores();
 }
+// End of the initialize() function
 
+// Start of the startQuiz() function
 function startQuiz(sectionIndex) {
     currentSectionIndex = sectionIndex;
     currentQuestionIndex = 0;
@@ -111,7 +115,9 @@ function startQuiz(sectionIndex) {
     quizScreen.style.display = 'block';
     loadQuestion();
 }
+// End of the startQuiz() function
 
+// Start of the shuffle() function
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -119,7 +125,9 @@ function shuffle(array) {
   }
   return array;
 }
+// End of the shuffle() function
 
+// Start of the loadQuestion() function
 function loadQuestion() {
     const currentSection = sections[currentSectionIndex];
     const currentQuestion = currentSection.questions[currentQuestionIndex];
@@ -138,7 +146,9 @@ function loadQuestion() {
         choicesArea.appendChild(button);
     });
 }
+// End of the loadQuestion() function
 
+// Start of the endQuiz() function
 function endQuiz() {
     quizScreen.style.display = 'none';
     resultsScreen.style.display = 'block';
@@ -149,7 +159,9 @@ function endQuiz() {
     saveScore();
     displayHighScores();
 }
+// End of the endQuiz() function
 
+// Start of the saveScore() function
 function saveScore() {
     const scores = JSON.parse(localStorage.getItem(HIGHSCORE_KEY)) || [];
     const newScore = {
@@ -160,7 +172,9 @@ function saveScore() {
     scores.push(newScore);
     localStorage.setItem(HIGHSCORE_KEY, JSON.stringify(scores));
 }
+// End of the saveScore() function
 
+// Start of the displayHighScores() function
 function displayHighScores() {
     const scores = JSON.parse(localStorage.getItem(HIGHSCORE_KEY)) || [];
     const highScoresList = document.getElementById('high-scores-list');
@@ -178,7 +192,9 @@ function displayHighScores() {
         });
     }
 }
+// End of the displayHighScores() function
 
+// Start of the checkAnswer() function
 function checkAnswer(selectedChoice) {
     const currentQuestion = sections[currentSectionIndex].questions[currentQuestionIndex];
     const buttons = document.querySelectorAll('.choices button');
@@ -210,7 +226,7 @@ function checkAnswer(selectedChoice) {
         }
     }, 1500);
 }
-
+// End of the checkAnswer() function
 
 // Start the quiz when the page loads
 window.onload = initialize;

@@ -179,5 +179,38 @@ function displayHighScores() {
     }
 }
 
+function checkAnswer(selectedChoice) {
+    const currentQuestion = sections[currentSectionIndex].questions[currentQuestionIndex];
+    const buttons = document.querySelectorAll('.choices button');
+    
+    // Disable all buttons to prevent multiple clicks
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+
+    // Provide immediate visual feedback on the clicked button
+    const clickedButton = Array.from(buttons).find(btn => btn.textContent === selectedChoice);
+    if (selectedChoice === currentQuestion.correct) {
+        clickedButton.style.backgroundColor = '#28a745'; // Correct - Green
+        score++;
+    } else {
+        clickedButton.style.backgroundColor = '#dc3545'; // Incorrect - Red
+        // Also show the correct answer
+        const correctButton = Array.from(buttons).find(btn => btn.textContent === currentQuestion.correct);
+        correctButton.style.backgroundColor = '#28a745'; // Correct - Green
+    }
+
+    // Wait and then move to the next question or end the quiz
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < sections[currentSectionIndex].questions.length) {
+            loadQuestion();
+        } else {
+            endQuiz();
+        }
+    }, 1500);
+}
+
+
 // Start the quiz when the page loads
 window.onload = initialize;
